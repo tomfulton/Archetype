@@ -204,7 +204,6 @@ module.exports = function(grunt) {
           licenseUrl: '<%= pkgMeta.licenseUrl %>',
           author: '<%= pkgMeta.author %>',
           authorUrl: '<%= pkgMeta.authorUrl %>',
-          manifest: 'config/package.xml',
           readme: '<%= grunt.file.read("config/readme.txt") %>'
         }
       }
