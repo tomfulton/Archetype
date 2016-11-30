@@ -1,0 +1,33 @@
+{{VERSION_HTML}}
+<div class="umb-panel archetypeAddDialog" ng-controller="Imulus.ArchetypeAddDialogController">
+    <div class="umb-panel-body no-header with-footer umb-scrollable">
+        <h3><archetype-localize key="dialog_add">Add</archetype-localize></h3>
+
+        <ul class="groups" ng-show="overlayMenu.fieldsetGroups.length > 1">
+            <li ng-repeat="fieldsetGroup in overlayMenu.fieldsetGroups" ng-class="{active: fieldsetGroup == overlayMenu.activeFieldsetGroup}">
+                <a ng-click="overlayMenu.activeFieldsetGroup = fieldsetGroup">
+                    {{fieldsetGroup.name}}
+                </a>
+            </li>
+        </ul>
+        <ul class="elements">
+          <li ng-repeat="fieldset in overlayMenu.activeFieldsetGroup.fieldsets">
+                <a ng-click="pickFieldset(fieldset.alias, overlayMenu.index)" href>
+                    <i class="icon {{fieldset.icon}}"></i>
+                    {{fieldset.label}}
+                </a>
+            </li>
+        </ul>
+
+
+    </div>
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+                <button class="btn" ng-click="apply()">
+                    <archetype-localize key="button_close">Close</archetype-localize>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

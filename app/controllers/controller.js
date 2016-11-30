@@ -1,5 +1,5 @@
 {{VERSION}}
-angular.module("umbraco").controller("Imulus.ArchetypeController", function ($scope, $http, $filter, assetsService, angularHelper, notificationsService, $timeout, fileManager, entityResource, archetypeService, archetypeLabelService, archetypeCacheService, archetypePropertyEditorResource) {
+angular.module("umbraco").controller("Imulus.ArchetypeController", function ($scope, $http, $filter, assetsService, angularHelper, notificationsService, $timeout, fileManager, entityResource, archetypeService, archetypeLabelService, archetypeCacheService, archetypePropertyEditorResource, dialogService) {
 
     // Variables.
     var draggedParent;
@@ -281,6 +281,17 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         $scope.overlayMenu.index = $index;
         $scope.overlayMenu.activeFieldsetGroup = $scope.overlayMenu.fieldsetGroups[0];
 
+        if ($scope.model.config.enableAddDialog) {
+          dialogService.open({
+            template: "/../App_Plugins/Archetype/views/archetype.add.dialog.html",
+            dialogData: { overlayMenu: $scope.overlayMenu },
+            callback: function (d) {
+              $scope.pickFieldset(d.alias, d.index);
+            }
+          });
+
+          return;
+        }
         // calculate overlay position
         // - yeah... it's jQuery (ungh!) but that's how the Grid does it.
         var offset = $(event.target).offset();
