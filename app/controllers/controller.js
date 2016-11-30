@@ -244,6 +244,8 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
     //handles a fieldset add
     $scope.openFieldsetPicker = function ($index, event) {
+        event.stopPropagation(); // stop fieldset label click from registering
+
         if ($scope.canAdd() == false) {
             return;
         }
@@ -334,7 +336,9 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         }
     }
 
-    $scope.removeRow = function ($index) {
+    $scope.removeRow = function ($index, event) {
+      event.stopPropagation(); // stop fieldset label click from registering
+
         if ($scope.canRemove()) {
             if (confirm('Are you sure you want to remove this?')) {
                 $scope.setDirty();
@@ -344,7 +348,9 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         }
     }
 
-    $scope.cloneRow = function ($index) {
+    $scope.cloneRow = function ($index, event) {
+      event.stopPropagation(); // stop fieldset label click from registering
+
         if ($scope.canClone() && typeof $index != 'undefined') {
             var newFieldset = angular.copy($scope.model.value.fieldsets[$index]);
 
@@ -373,7 +379,10 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         }
     }
 
-    $scope.enableDisable = function (fieldset) {
+    $scope.enableDisable = function (fieldset, event) {
+
+        event.stopPropagation(); // stop fieldset label click from registering
+
         fieldset.disabled = !fieldset.disabled;
         // explicitly set the form as dirty when manipulating the enabled/disabled state of a fieldset
         $scope.setDirty();
