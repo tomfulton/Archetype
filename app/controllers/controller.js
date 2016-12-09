@@ -672,7 +672,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     }
 
     //watch for changes
-    $scope.$watch('model.value', function (v) {
+    $scope.$watch('model.value', function (v, oldVal) {
         if ($scope.model.config.developerMode) {
             console.log(v);
             if (typeof v === 'string') {
@@ -687,6 +687,22 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
         // reset submit watcher counter on save
         $scope.activeSubmitWatcher = 0;
+
+        var expandedFieldsets = [];
+
+        recurseFieldsets(function (fs) {
+          if (fs.hasOwnProperty('collapse') && !fs.collapse) {
+            expandedFieldsets.push(fs);
+          }
+        }, oldVal.fieldsets);
+
+        var activeIds = _.pluck(expandedFieldsets, 'id');
+
+        recurseFieldsets(function (fs) {
+          if (activeIds.indexOf(fs.id) > -1) {
+            fs.collapse = false;
+          }
+        }, $scope.model.value.fieldsets);
 
         // init loaded fieldsets tracking
         _.each($scope.model.value.fieldsets, function (fieldset) {
