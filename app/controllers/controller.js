@@ -531,7 +531,6 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     {
         _.each(fieldsets, function (fieldset)
         {
-            fieldset.collapse = false;
             fieldset.isValid = true;
         });
     }
@@ -609,17 +608,10 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         if(fieldset)
         {
             iniState = fieldset.collapse;
-        }
 
-        _.each($scope.model.value.fieldsets, function(fieldset){
-            fieldset.collapse = true;
-        });
-
-        if(!fieldset && $scope.model.value.fieldsets.length == 1)
-        {
-            $scope.model.value.fieldsets[0].collapse = false;
-            $scope.loadedFieldsets.push($scope.model.value.fieldsets[0]);
-            return;
+            _.each($scope.model.value.fieldsets, function(fieldset){
+                fieldset.collapse = true;
+            });
         }
 
         if(iniState && fieldset)
@@ -633,9 +625,11 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     $scope.focusFieldset();
 
     // Fieldsets which cannot be collapsed should start expanded.
-    _.each($scope.model.value.fieldsets, function(fieldset) {
-        fieldset.collapse = $scope.model.config.enableCollapsing;
-    });
+    if (!$scope.model.config.enableCollapsing) {
+      _.each($scope.model.value.fieldsets, function(fieldset) {
+          fieldset.collapse = true;
+      });
+    }
     $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
 
     //developerMode helpers
@@ -688,8 +682,8 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         // reset submit watcher counter on save
         $scope.activeSubmitWatcher = 0;
 
+        // track collapse state of fieldsets and persist in newVal
         var expandedFieldsets = [];
-
         recurseFieldsets(function (fs) {
           if (fs.hasOwnProperty('collapse') && !fs.collapse) {
             expandedFieldsets.push(fs);
@@ -697,17 +691,16 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         }, oldVal.fieldsets);
 
         var activeIds = _.pluck(expandedFieldsets, 'id');
-
         recurseFieldsets(function (fs) {
-          if (activeIds.indexOf(fs.id) > -1) {
-            fs.collapse = false;
-          }
+          fs.collapse = activeIds.indexOf(fs.id) == -1;
         }, $scope.model.value.fieldsets);
 
+        // auto-expand when there is only 1 fieldset, but only if we're not already auto-expanding from previous save
+        if (activeIds.length == 0 && $scope.model.value.fieldsets.length == 1) {
+          $scope.model.value.fieldsets[0].collapse = false;
+        }
+
         // init loaded fieldsets tracking
-        _.each($scope.model.value.fieldsets, function (fieldset) {
-            fieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
-        });
         $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
 
         // create properties needed for the backoffice to work (data that is not serialized to DB)
