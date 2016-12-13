@@ -602,13 +602,17 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     }
 
     //ini the fieldset expand/collapse
-    $scope.focusFieldset();
-
-    // Fieldsets which cannot be collapsed should start expanded.
+    //-fieldsets which cannot be collapsed should start expanded
     if (!$scope.model.config.enableCollapsing) {
         _.each($scope.model.value.fieldsets, function(fieldset) {
             fieldset.collapse = true;
         });
+    }
+    //-auto-expand when there is only 1 fieldset, only on the root archetype
+    //-this only applies on initial load - should not expand a collapsed single fieldset on save
+    var isRootLevelArchetype = !$scope.$parent.hasOwnProperty('model') || $scope.$parent.model.alias.indexOf('archetype-property') == -1;
+    if (isRootLevelArchetype && $scope.model.value.fieldsets.length == 1) {
+      $scope.model.value.fieldsets[0].collapse = false;
     }
     $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
 
@@ -675,15 +679,10 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
           fs.collapse = activeIds.indexOf(fs.id) == -1;
         }, $scope.model.value.fieldsets);
 
-        // auto-expand when there is only 1 fieldset, but only if we're not already auto-expanding from previous save
-        if (activeIds.length == 0 && $scope.model.value.fieldsets.length == 1) {
-          $scope.model.value.fieldsets[0].collapse = false;
-        }
-
         // init loaded fieldsets tracking
         if (!$scope.model.config.enableCollapsing) {
             _.each($scope.model.value.fieldsets, function(fieldset) {
-               fieldset.collapse = true;
+               fieldset.collapse = false;
             });
         }
         $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
