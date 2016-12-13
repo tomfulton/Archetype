@@ -322,14 +322,12 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
             $scope.$broadcast("archetypeAddFieldset", {index: $index, visible: countVisible()});
 
-            newFieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
+            newFieldset.collapse = !$scope.model.config.enableCollapsing;
 
             // If the fieldset is not collapsed, it should be instantly loaded.
             if (!newFieldset.collapse) {
                 $scope.loadedFieldsets.push(newFieldset);
             }
-            
-            $scope.focusFieldset(newFieldset);
         }
     }
 
@@ -360,7 +358,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
                 $scope.setDirty();
 
-                newFieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
+                newFieldset.collapse = !$scope.model.config.enableCollapsing;
 
                 // If the fieldset is not collapsed, it should be instantly loaded.
                 if (!newFieldset.collapse) {
@@ -511,6 +509,10 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     {
         _.each(fieldsets, function (fieldset)
         {
+          if (!fieldset.hasOwnProperty('collapse')) {
+            fieldset.collapse = true;
+
+          }
             fieldset.isValid = true;
         });
     }
@@ -668,16 +670,25 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
         // track collapse state of fieldsets and persist in newVal
         var expandedFieldsets = [];
+        var activeIndexes = [];
+        var zi = 0;
         recurseFieldsets(function (fs) {
-          if (fs.hasOwnProperty('collapse') && !fs.collapse) {
-            expandedFieldsets.push(fs);
+          if (fs.hasOwnProperty('collapse') && !fs.collapse) { // Note - not having collapse property == false - need to clean up
+            activeIndexes.push(zi);
           }
+          zi++;
         }, oldVal.fieldsets);
 
-        var activeIds = _.pluck(expandedFieldsets, 'id');
+        // Instead of storing IDs, need to store some sort of index...
+        // assume same 'tree' structure/heirarcy in oldVal/newVal
+        var zi2 = 0;
         recurseFieldsets(function (fs) {
-          fs.collapse = activeIds.indexOf(fs.id) == -1;
+          if (activeIndexes.indexOf(zi2) > -1) {
+            fs.collapse = false;
+          }
+          zi2++;
         }, $scope.model.value.fieldsets);
+
 
         // init loaded fieldsets tracking
         if (!$scope.model.config.enableCollapsing) {
@@ -850,7 +861,9 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         _.each(fieldsets, function(fieldset) {
             fn(fieldset);
             _.each(fieldset.properties, function (property) {
-                if (property != null && property.value != null && property.propertyEditorAlias === "Imulus.Archetype") {
+              // temp fix for missing propertyEditorAlias - why?
+              var isArchetype = property.propertyEditorAlias === "Imulus.Archetype" || property.value.hasOwnProperty('fieldsets');
+                if (property != null && property.value != null && isArchetype) {
                     recurseFieldsets(fn, property.value.fieldsets);
                 }
             });
