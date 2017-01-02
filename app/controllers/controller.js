@@ -3,6 +3,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
     // Variables.
     var draggedParent;
+    $scope.isFirstLoad = true; // gets reset when the form is submitted. only relevant to root archetypes, children get fully re-inited every time
 
     //$scope.model.value = "";
     $scope.model.hideLabel = $scope.model.config.hideLabel == 1;
@@ -18,7 +19,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
     // store the umbraco property alias to help generate unique IDs.  Hopefully there's a better way to get this in the future :)
     $scope.umbracoHostPropertyAlias = $scope.$parent.$parent.model.alias;
-    
+
     $scope.isDebuggingEnabled = Umbraco.Sys.ServerVariables.isDebuggingEnabled;
 
     $scope.overlayMenu = {
@@ -28,13 +29,13 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
     init();
 
-    //hold references to helper resources 
+    //hold references to helper resources
     $scope.resources = {
         entityResource: entityResource,
         archetypePropertyEditorResource: archetypePropertyEditorResource
     }
 
-    //hold references to helper services 
+    //hold references to helper services
     $scope.services = {
         archetypeService: archetypeService,
         archetypeLabelService: archetypeLabelService,
@@ -295,12 +296,12 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     $scope.closeFieldsetPicker = function () {
         $scope.overlayMenu.show = false;
     };
-    
+
     $scope.pickFieldset = function (fieldsetAlias, $index) {
         $scope.closeFieldsetPicker();
         $scope.addRow(fieldsetAlias, $index);
-    };    
-    
+    };
+
     $scope.addRow = function (fieldsetAlias, $index) {
         if ($scope.canAdd()) {
             if ($scope.model.config.fieldsets) {
@@ -328,7 +329,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             if (!newFieldset.collapse) {
                 $scope.loadedFieldsets.push(newFieldset);
             }
-            
+
             $scope.focusFieldset(newFieldset);
         }
     }
@@ -392,7 +393,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
     //helper that returns if an item can be removed
     $scope.canRemove = function () {
-        return countVisible() > 1 
+        return countVisible() > 1
             || ($scope.model.config.maxFieldsets == 1 && $scope.model.config.fieldsets.length > 1)
             || $scope.model.config.startWithAddButton;
     };
@@ -511,7 +512,6 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     {
         _.each(fieldsets, function (fieldset)
         {
-            fieldset.collapse = false;
             fieldset.isValid = true;
         });
     }
@@ -570,7 +570,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         return fieldset.collapse;
     };
 
-    // added to track loaded fieldsets 
+    // added to track loaded fieldsets
     $scope.loadedFieldsets = [];
     $scope.isLoaded = function (fieldset) {
         return $scope.loadedFieldsets.indexOf(fieldset) >= 0;
@@ -595,13 +595,6 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             fieldset.collapse = true;
         });
 
-        if(!fieldset && $scope.model.value.fieldsets.length == 1)
-        {
-            $scope.model.value.fieldsets[0].collapse = false;
-            $scope.loadedFieldsets.push($scope.model.value.fieldsets[0]);
-            return;
-        }
-
         if(iniState && fieldset)
         {
             fieldset.collapse = !iniState;
@@ -609,14 +602,25 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         }
     }
 
-    //ini the fieldset expand/collapse
-    $scope.focusFieldset();
+    var initFocusFieldset = function () {
+        if($scope.model.value.fieldsets.length == 1)
+        {
+            $scope.model.value.fieldsets[0].collapse = false;
+            $scope.loadedFieldsets.push($scope.model.value.fieldsets[0]);
+            return;
+        }
 
-    // Fieldsets which cannot be collapsed should start expanded.
-    _.each($scope.model.value.fieldsets, function(fieldset) {
-        fieldset.collapse = $scope.model.config.enableCollapsing;
-    });
-    $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
+        // Fieldsets which cannot be collapsed should start expanded.
+        if (!$scope.model.config.enableCollapsing) {
+          _.each($scope.model.value.fieldsets, function(fieldset) {
+              fieldset.collapse = false;
+          });
+        }
+        $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
+    };
+
+    //ini the fieldset expand/collapse
+    initFocusFieldset();
 
     //developerMode helpers
     $scope.model.value.toString = stringify;
@@ -633,7 +637,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     function setFiles(files) {
         // get all currently selected files from file manager
         var currentFiles = fileManager.getFiles();
-        
+
         // get the files already selected for this archetype (by alias)
         var archetypeFiles = [];
         _.each(currentFiles, function (item) {
@@ -669,9 +673,24 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         $scope.activeSubmitWatcher = 0;
 
         // init loaded fieldsets tracking
+        // TODO: Remove or consolidate with initFocusFieldset for !enableCollapsing
         _.each($scope.model.value.fieldsets, function (fieldset) {
-            fieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
+            if (fieldset.collapse !== false) { // Dont touch ones we already touched
+              fieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
+            }
         });
+
+        var activeIndexes = window.localStorage.getItem('wat') != null ? window.localStorage.getItem('wat').split(',') : [];
+        if (!$scope.isFirstLoad && isRootLevelArchetype() && activeIndexes.length > 0) {
+          var idx = 0;
+          recurseFieldsets(function (fieldset) {
+            if (activeIndexes.indexOf(idx.toString()) > -1) {
+              fieldset.collapse = false;
+            }
+            idx++;
+          }, $scope.model.value.fieldsets);
+        }
+
         $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
 
         // create properties needed for the backoffice to work (data that is not serialized to DB)
@@ -786,14 +805,29 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         $scope.$broadcast("archetypeFormSubmitting", args);
     }
 
-    // we'll use our own "archetypeFormSubmitting" event to save custom properties, as at least some 
+    // we'll use our own "archetypeFormSubmitting" event to save custom properties, as at least some
     // of the editors store their values back to the model on the core "formSubmitting" event
     $scope.$on("archetypeFormSubmitting", function (ev, args) {
+        $scope.isFirstLoad = false;
+
+        // Persist expanded fieldset indexes to localStorage
+        if (isRootLevelArchetype()) {
+          var expandedFieldsets = [];
+          var idx = 0;
+          recurseFieldsets(function (fs) {
+            if (fs.hasOwnProperty('collapse') && !fs.collapse) {
+              expandedFieldsets.push(idx);
+            }
+            idx++;
+          }, $scope.model.value.fieldsets);
+          window.localStorage.setItem('wat', expandedFieldsets);
+        }
+
         _.each($scope.model.value.fieldsets, function (fieldset) {
             // extract the publish configuration from the fieldsets (and convert local datetimes to UTC)
             fieldset.releaseDate = toUtc(fieldset.releaseDateModel.value);
             fieldset.expireDate = toUtc(fieldset.expireDateModel.value);
-            // extract the allowed member groups 
+            // extract the allowed member groups
             fieldset.allowedMemberGroups = fieldset.allowedMemberGroupsModel.value;
         });
     });
@@ -837,7 +871,8 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         _.each(fieldsets, function(fieldset) {
             fn(fieldset);
             _.each(fieldset.properties, function (property) {
-                if (property != null && property.value != null && property.propertyEditorAlias === "Imulus.Archetype") {
+              var isArchetype = property.propertyEditorAlias === "Imulus.Archetype" || property.value.hasOwnProperty('fieldsets');
+                if (property != null && property.value != null && isArchetype) {
                     recurseFieldsets(fn, property.value.fieldsets);
                 }
             });
@@ -878,6 +913,12 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             return data;
         }
         return null;
+    }
+
+    // Returns true if the current Archetype is at the root level (ie, an Umbraco property)
+    // or false if it's nested within another Archetype
+    function isRootLevelArchetype() {
+      return !$scope.$parent.hasOwnProperty('model') || $scope.$parent.model.alias.indexOf('archetype-property') == -1;
     }
 
 });
