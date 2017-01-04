@@ -689,7 +689,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             }
         });
 
-        var activeIndexes = window.localStorage.getItem('wat') != null ? window.localStorage.getItem('wat').split(',') : [];
+        var activeIndexes = window.localStorage.getItem('archetypeExpandedFieldsets_' + $scope.model.id) != null ? window.localStorage.getItem('archetypeExpandedFieldsets_' + $scope.model.id).split(',') : [];
         if (!$scope.isFirstLoad && isRootLevelArchetype() && activeIndexes.length > 0) {
           var idx = 0;
           recurseFieldsets(function (fieldset) {
@@ -829,7 +829,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             }
             idx++;
           }, $scope.model.value.fieldsets);
-          window.localStorage.setItem('wat', expandedFieldsets);
+          window.localStorage.setItem('archetypeExpandedFieldsets_' + $scope.model.id, expandedFieldsets);
         }
 
         _.each($scope.model.value.fieldsets, function (fieldset) {
