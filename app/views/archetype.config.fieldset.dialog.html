@@ -12,6 +12,9 @@
             <label for="archetypeAdvancedOptionsCollapsing"><input type="checkbox" id="archetypeAdvancedOptionsCollapsing" ng-model="dialogData.model.enableCollapsing"/><archetype-localize key="enableCollapsing">Enable Collapsing?</archetype-localize><small><archetype-localize key="enableCollapsingDescription">Enable fieldset collapsing.</archetype-localize></small></label>
         </div>
         <div>
+            <label for="archetypeAdvancedOptionsAutoExpandLone"><input type="checkbox" id="archetypeAdvancedOptionsAutoExpandLone" ng-model="dialogData.model.autoExpandLoneFieldsets"/><archetype-localize key="autoExpandLoneFieldsets">Auto-expand Lone Fieldsets?</archetype-localize><small><archetype-localize key="enableCollapsingDescription">If enabled, when there is only 1 fieldset in the Archetype, it will start expanded rather than collapsed.</archetype-localize></small></label>
+        </div>
+        <div>
             <label for="archetypeAdvancedOptionsMaxFieldsets"><archetype-localize key="maxFieldsets">Max Fieldsets</archetype-localize><small><archetype-localize key="maxFieldsetsDescription">How many Fieldsets are allowed? Entering '1' will disable the controls. Default is unlimited.</archetype-localize></small></label>
             <input type="number" id="archetypeAdvancedOptionsMaxFieldsets" class="archetypeMaxFieldsets" ng-model="dialogData.model.maxFieldsets"/>
         </div>

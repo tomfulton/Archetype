@@ -12,6 +12,9 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
 
     //set the config equal to our prevalue config
     $scope.model.config = $scope.model.config.archetypeConfig;
+    if (!$scope.model.config.hasOwnProperty('autoExpandLoneFieldsets')) {
+      $scope.model.config.autoExpandLoneFieldsets = true; // Add default for b/w compat
+    }
 
     //ini the model
     $scope.model.value = $scope.model.value || getDefaultModel($scope.model.config);
@@ -602,7 +605,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     }
 
     var initFocusFieldset = function () {
-        if($scope.model.value.fieldsets.length == 1)
+        if($scope.model.config.autoExpandLoneFieldsets && $scope.model.value.fieldsets.length == 1)
         {
             $scope.model.value.fieldsets[0].collapse = false;
             $scope.loadedFieldsets.push($scope.model.value.fieldsets[0]);
