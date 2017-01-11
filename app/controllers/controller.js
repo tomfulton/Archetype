@@ -511,7 +511,6 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     {
         _.each(fieldsets, function (fieldset)
         {
-            fieldset.collapse = false;
             fieldset.isValid = true;
         });
     }
@@ -595,13 +594,6 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             fieldset.collapse = true;
         });
 
-        if(!fieldset && $scope.model.value.fieldsets.length == 1)
-        {
-            $scope.model.value.fieldsets[0].collapse = false;
-            $scope.loadedFieldsets.push($scope.model.value.fieldsets[0]);
-            return;
-        }
-
         if(iniState && fieldset)
         {
             fieldset.collapse = !iniState;
@@ -609,14 +601,25 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         }
     }
 
-    //ini the fieldset expand/collapse
-    $scope.focusFieldset();
+    var initFocusFieldset = function () {
+        if($scope.model.value.fieldsets.length == 1)
+        {
+            $scope.model.value.fieldsets[0].collapse = false;
+            $scope.loadedFieldsets.push($scope.model.value.fieldsets[0]);
+            return;
+        }
 
-    // Fieldsets which cannot be collapsed should start expanded.
-    _.each($scope.model.value.fieldsets, function(fieldset) {
-        fieldset.collapse = $scope.model.config.enableCollapsing;
-    });
-    $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
+        // Fieldsets which cannot be collapsed should start expanded.
+        if (!$scope.model.config.enableCollapsing) {
+          _.each($scope.model.value.fieldsets, function(fieldset) {
+              fieldset.collapse = false;
+          });
+        }
+        $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
+    };
+
+    //ini the fieldset expand/collapse
+    initFocusFieldset();
 
     //developerMode helpers
     $scope.model.value.toString = stringify;
@@ -652,7 +655,7 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
     }
 
     //watch for changes
-    $scope.$watch('model.value', function (v) {
+    $scope.$watch('model.value', function (v, oldVal) {
         if ($scope.model.config.developerMode) {
             console.log(v);
             if (typeof v === 'string') {
@@ -669,9 +672,32 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         $scope.activeSubmitWatcher = 0;
 
         // init loaded fieldsets tracking
+        // TODO: Remove or consolidate with initFocusFieldset for !enableCollapsing
         _.each($scope.model.value.fieldsets, function (fieldset) {
-            fieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
+            if (fieldset.collapse !== false) { // Dont touch ones we already touched
+              fieldset.collapse = $scope.model.config.enableCollapsing ? true : false;
+            }
         });
+
+        var activeIndexes = [];
+        var idx = 0;
+        recurseFieldsets(function (fieldset) {
+          if (fieldset.hasOwnProperty('collapse') && !fieldset.collapse) {
+            activeIndexes.push(idx);
+          }
+          idx++;
+        }, oldVal.fieldsets);
+
+        if (isRootLevelArchetype() && activeIndexes.length > 0) {
+          idx = 0;
+          recurseFieldsets(function (fieldset) {
+            if (activeIndexes.indexOf(idx) > -1) {
+              fieldset.collapse = false;
+            }
+            idx++;
+          }, $scope.model.value.fieldsets);
+        }
+
         $scope.loadedFieldsets = _.where($scope.model.value.fieldsets, { collapse: false });
 
         // create properties needed for the backoffice to work (data that is not serialized to DB)
@@ -878,6 +904,12 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
             return data;
         }
         return null;
+    }
+
+    // Returns true if the current Archetype is at the root level (ie, an Umbraco property)
+    // or false if it's nested within another Archetype
+    function isRootLevelArchetype() {
+      return !$scope.$parent.hasOwnProperty('model') || $scope.$parent.model.alias.indexOf('archetype-property') == -1;
     }
 
 });
