@@ -312,10 +312,10 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         var offset = $(event.target).offset();
         var scrollTop = $(event.target).closest(".umb-panel-body").scrollTop();
         if (offset.top < 400) {
-            $scope.overlayMenu.style.top = scrollTop + 300;
+            $scope.overlayMenu.style.top = 300 + scrollTop;
         }
         else {
-            $scope.overlayMenu.style.top = 200;
+            $scope.overlayMenu.style.top = offset.top - 150 + scrollTop;
         }
         $scope.overlayMenu.show = true;
     };
