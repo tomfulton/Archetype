@@ -1,5 +1,5 @@
 {{VERSION_HTML}}
-<div class="archetypeEditor ng-class:model.config.customCssClass">
+<div class="archetypeEditor {{model.config.customCssClass}}" ng-class="{empty: model.value.fieldsets.length === 0 || sortingLastItem()}">
     <textarea class="archetypeDeveloperModel" ng-show="model.config.developerMode" ng-model="model.value"></textarea>
 
     <!-- "Add" button. -->
