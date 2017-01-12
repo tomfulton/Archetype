@@ -36,6 +36,11 @@ angular.module('umbraco.resources').factory('archetypePropertyEditorResource', f
             return umbRequestHelper.resourcePromise(
                 $http.get("backoffice/ArchetypeApi/ArchetypeDataType/GetDllVersion", { cache: true }), 'Failed to retrieve dll version'
             );
+        },
+        getFieldsetMetaData: function () {
+            return umbRequestHelper.resourcePromise(
+                $http.get("../App_Plugins/Archetype/fieldset-meta.json", { cache: true }), 'Failed to retrieve fieldset metadata'
+            );
         }
     }
 }); 

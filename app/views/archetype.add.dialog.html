@@ -16,12 +16,12 @@
             <h3>
                   <i class="icon {{fieldset.icon}}"></i>
                   {{fieldset.label}}
-                  <small>Lorem ipsum</small>
+                  <small>{{getFieldsetMeta(fieldset.alias, 'description')}}</small>
               </h3>
             </div>
 
           <div class="preview">
-            <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=200%C3%9775&w=200&h=75" />
+            <img src="{{getFieldsetMeta(fieldset.alias, 'image')}}" />
           </div>
 
           <br style="clear: both;" />
