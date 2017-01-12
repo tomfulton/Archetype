@@ -12,12 +12,14 @@ module.exports = function(grunt) {
       version: {
         files: {
           "app/controllers/controller_versioned.js": "app/controllers/controller.js",
+          "app/controllers/add.dialog.controller_versioned.js": "app/controllers/add.dialog.controller.js",          
           "app/less/archetype_versioned.less": "app/less/archetype.less",
           "app/views/archetype.config.developer.dialog_versioned.html": "app/views/archetype.config.developer.dialog.html",
           "app/views/archetype.config.stylescript.dialog_versioned.html": "app/views/archetype.config.stylescript.dialog.html",
           "app/views/archetype.config.fieldset.dialog_versioned.html": "app/views/archetype.config.fieldset.dialog.html",
           "app/views/archetype.config_versioned.html": "app/views/archetype.config.html",
           "app/views/archetype_versioned.html": "app/views/archetype.html",
+          "app/views/archetype.add.dialog_versioned.html": "app/views/archetype.add.dialog.html",          
           "app/views/archetype.default_versioned.html": "app/views/archetype.default.html"
         },
         options: {
@@ -83,6 +85,7 @@ module.exports = function(grunt) {
       dist: {
         src: [
           'app/controllers/controller_versioned.js',
+          'app/controllers/add.dialog.controller_versioned.js',
           'app/controllers/config.controller.js',
           'app/controllers/config.dialog.controller.js',
           'app/directives/archetypeproperty.js',
@@ -110,6 +113,7 @@ module.exports = function(grunt) {
             'archetype.config_versioned.html', 
             'archetype.config.fieldset.dialog_versioned.html', 
             'archetype.config.stylescript.dialog_versioned.html', 
+            'archetype.add.dialog_versioned.html',
             'archetype.config.developer.dialog_versioned.html'
         ],
         dest: '<%= basePath %>/views/',
@@ -260,6 +264,7 @@ module.exports = function(grunt) {
         'app/views/*.html',
         '!app/views/archetype.html', 
         '!app/views/archetype.default.html', 
+        '!app/views/archetype.add.dialog.html',
         '!app/views/archetype.config.html', 
         '!app/views/archetype.config.fieldset.dialog.html', 
         '!app/views/archetype.config.stylescript.dialog.html', 
@@ -268,6 +273,7 @@ module.exports = function(grunt) {
       js: [
         'app/controllers/*.js',
         '!app/controllers/controller.js',
+        '!app/controllers/add.dialog.controller.js',
         '!app/controllers/config.controller.js',
         '!app/controllers/config.dialog.controller.js'
       ],

@@ -284,6 +284,29 @@ angular.module("umbraco").controller("Imulus.ArchetypeController", function ($sc
         $scope.overlayMenu.index = $index;
         $scope.overlayMenu.activeFieldsetGroup = $scope.overlayMenu.fieldsetGroups[0];
 
+        if ($scope.model.config.enableAddDialog) {
+          $scope.overlayDialog = {};
+          $scope.overlayDialog.view = "/../App_Plugins/Archetype/views/archetype.add.dialog.html";
+          $scope.overlayDialog.show = true;
+          $scope.overlayDialog.title = "Add Content Block";
+          $scope.overlayDialog.hideSubmitButton = true;
+          $scope.overlayDialog.overlayMenu = $scope.overlayMenu;
+
+          $scope.overlayDialog.close = function (oldModel) {
+            $scope.overlayDialog.show = false;
+            $scope.overlayDialog = null;
+          };
+
+          $scope.overlayDialog.submit = function (model) {
+            console.log("CB");
+            $scope.pickFieldset(model.alias, model.index);
+            $scope.overlayDialog.show = false;
+            $scope.overlayDialog = null;
+          };
+
+          return;
+        }
+
         // calculate overlay position
         // - yeah... it's jQuery (ungh!) but that's how the Grid does it.
         var offset = $(event.target).offset();

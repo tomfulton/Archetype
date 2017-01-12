@@ -1,0 +1,35 @@
+{{VERSION_HTML}}
+<div class="umb-panel archetypeAddDialog" ng-controller="Imulus.ArchetypeAddDialogController">
+    <div class="umb-panel-body no-header with-footer umb-scrollable">
+
+        <ul class="groups" ng-show="model.overlayMenu.fieldsetGroups.length > 1">
+            <li ng-repeat="fieldsetGroup in model.overlayMenu.fieldsetGroups" ng-class="{active: fieldsetGroup == model.overlayMenu.activeFieldsetGroup}" ng-click="model.overlayMenu.activeFieldsetGroup = fieldsetGroup">
+                <a prevent-default href="#">
+                    {{fieldsetGroup.name}}
+                </a>
+            </li>
+        </ul>
+        <ul class="elements">
+          <li ng-repeat="fieldset in model.overlayMenu.activeFieldsetGroup.fieldsets" ng-click="pickFieldset(fieldset.alias, overlayMenu.index)" >
+            <div class="content">
+
+            <h3>
+                  <i class="icon {{fieldset.icon}}"></i>
+                  {{fieldset.label}}
+                  <small>Lorem ipsum</small>
+              </h3>
+            </div>
+
+          <div class="preview">
+            <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=200%C3%9775&w=200&h=75" />
+          </div>
+
+          <br style="clear: both;" />
+
+            </li>
+        </ul>
+
+
+    </div>
+
+</div>

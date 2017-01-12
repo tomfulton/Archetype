@@ -6,7 +6,7 @@
             <label for="archetypeAdvancedOptionsStartWithAddButton"><input type="checkbox" id="archetypeAdvancedOptionsStartWithAddButton" ng-model="dialogData.model.startWithAddButton"/><archetype-localize key="startWithAddButton">Start With Add Button?</archetype-localize><small><archetype-localize key="startWithAddButtonDescription">Empty property shows an add button instead of providing a default fieldset.</archetype-localize></small></label>
         </div>
         <div>
-            <label for="archetypeAdvancedOptionsHideLabels"><input type="checkbox" id="archetypeAdvancedOptionsHideLabels" ng-model="dialogData.model.hidePropertyLabels"/><archetype-localize key="hidePropertyLabels">Hide Property Labels?</archetype-localize><small><archetype-localize key="hidePropertyLabelsDescription">Hides the property labels.</archetype-localize></small></label>       
+            <label for="archetypeAdvancedOptionsHideLabels"><input type="checkbox" id="archetypeAdvancedOptionsHideLabels" ng-model="dialogData.model.hidePropertyLabels"/><archetype-localize key="hidePropertyLabels">Hide Property Labels?</archetype-localize><small><archetype-localize key="hidePropertyLabelsDescription">Hides the property labels.</archetype-localize></small></label>
         </div>
         <div>
             <label for="archetypeAdvancedOptionsCollapsing"><input type="checkbox" id="archetypeAdvancedOptionsCollapsing" ng-model="dialogData.model.enableCollapsing"/><archetype-localize key="enableCollapsing">Enable Collapsing?</archetype-localize><small><archetype-localize key="enableCollapsingDescription">Enable fieldset collapsing.</archetype-localize></small></label>
@@ -17,6 +17,9 @@
         <div>
             <label for="archetypeAdvancedOptionsMaxFieldsets"><archetype-localize key="maxFieldsets">Max Fieldsets</archetype-localize><small><archetype-localize key="maxFieldsetsDescription">How many Fieldsets are allowed? Entering '1' will disable the controls. Default is unlimited.</archetype-localize></small></label>
             <input type="number" id="archetypeAdvancedOptionsMaxFieldsets" class="archetypeMaxFieldsets" ng-model="dialogData.model.maxFieldsets"/>
+        </div>
+        <div>
+            <label for="archetypeAdvancedOptionsEnableAddDialog"><input type="checkbox" id="archetypeAdvancedOptionsEnableAddDialog" ng-model="dialogData.model.enableAddDialog"/><archetype-localize key="enableAddDialog">Enable Add Dialog?</archetype-localize><small><archetype-localize key="enableCollapsingDescription">If enabled, the inline Add menu will be replaced with a dialog</archetype-localize></small></label>
         </div>
 
         <h4><archetype-localize key="fieldsetControls">Fieldset controls</archetype-localize></h4>
@@ -39,7 +42,7 @@
 		<div>
             <label for="archetypeAdvancedOptionsMemberGroups"><input type="checkbox" id="archetypeAdvancedOptionsMemberGroups" ng-model="dialogData.model.enableMemberGroups" /><archetype-localize key="enableMemberGroups">Enable Member Group Access?</archetype-localize><small><archetype-localize key="enableMemerGroupsDescription">Allows fieldsets to be displayed for specified member groups only.</archetype-localize></small></label>
         </div>
-        
+
         <h4><archetype-localize key="multipleFieldsets">Multiple fieldsets</archetype-localize></h4>
         <div>
             <label for="archetypeAdvancedOptionsMultipleFieldsets"><input type="checkbox" id="archetypeAdvancedOptionsMultipleFieldsets" ng-model="dialogData.model.enableMultipleFieldsets"/><archetype-localize key="enableMultipleFieldsets">Enable Multiple Fieldsets?</archetype-localize><small><archetype-localize key="enableMultipleFieldsetsDescription">Allows multiple types of fieldsets within this archetype.</archetype-localize></small></label>
